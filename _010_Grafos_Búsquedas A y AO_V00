@@ -1,0 +1,83 @@
+# Daniel Alejandro Flores Sepulveda
+# Programa para realizar búsquedas A* y AO* en un grafo dado.
+
+import heapq
+
+# Definición de la función para la búsqueda A*
+def busqueda_a_estrella(grafo, inicio, objetivo, heuristica):
+    # Estructuras de datos para almacenar el costo acumulado y el camino
+    costo_acumulado = {inicio: 0}
+    cola_prioridad = [(0, inicio)]  # Cola de prioridad para seguir los nodos a visitar
+    
+    # Mientras la cola de prioridad no esté vacía
+    while cola_prioridad:
+        # Obtener el nodo con menor costo de la cola de prioridad
+        costo, nodo_actual = heapq.heappop(cola_prioridad)
+        # Si el nodo actual es el objetivo, retornar el costo acumulado
+        if nodo_actual == objetivo:
+            return costo_acumulado[nodo_actual]
+        # Recorrer los nodos adyacentes al nodo actual
+        for vecino, costo_vecino in grafo[nodo_actual].items():
+            # Calcular el costo acumulado hasta el vecino
+            nuevo_costo = costo_acumulado[nodo_actual] + costo_vecino
+            # Si el vecino no ha sido visitado o se encontró un camino más corto
+            if vecino not in costo_acumulado or nuevo_costo < costo_acumulado[vecino]:
+                # Actualizar el costo acumulado y agregar el vecino a la cola de prioridad
+                costo_acumulado[vecino] = nuevo_costo
+                prioridad = nuevo_costo + heuristica(vecino, objetivo)
+                heapq.heappush(cola_prioridad, (prioridad, vecino))
+    # Si no se encuentra un camino, retornar None
+    return None
+
+# Definición de la función para la búsqueda AO*
+def busqueda_ao_estrella(grafo, inicio, objetivo, heuristica, alpha):
+    # Estructuras de datos para almacenar el costo acumulado y el camino
+    costo_acumulado = {inicio: 0}
+    cola_prioridad = [(0, inicio)]  # Cola de prioridad para seguir los nodos a visitar
+    
+    # Mientras la cola de prioridad no esté vacía
+    while cola_prioridad:
+        # Obtener el nodo con menor costo de la cola de prioridad
+        costo, nodo_actual = heapq.heappop(cola_prioridad)
+        # Si el nodo actual es el objetivo, retornar el costo acumulado
+        if nodo_actual == objetivo:
+            return costo_acumulado[nodo_actual]
+        # Recorrer los nodos adyacentes al nodo actual
+        for vecino, costo_vecino in grafo[nodo_actual].items():
+            # Calcular el costo acumulado hasta el vecino
+            nuevo_costo = costo_acumulado[nodo_actual] + costo_vecino
+            # Actualizar el costo acumulado y agregar el vecino a la cola de prioridad
+            costo_acumulado[vecino] = nuevo_costo * alpha + (1 - alpha) * heuristica(vecino, objetivo)
+            heapq.heappush(cola_prioridad, (costo_acumulado[vecino], vecino))
+    # Si no se encuentra un camino, retornar None
+    return None
+
+# Ejemplo de un grafo de ejemplo representado como un diccionario de diccionarios con los costos de las aristas
+grafo = {
+    'A': {'B': 5, 'C': 7},
+    'B': {'A': 5, 'D': 3, 'E': 4},
+    'C': {'A': 7, 'F': 2},
+    'D': {'B': 3},
+    'E': {'B': 4, 'F': 6},
+    'F': {'C': 2, 'E': 6}
+}
+
+# Función heurística para estimar la distancia entre dos nodos en el grafo
+def heuristica_distancia(nodo_actual, objetivo):
+    # En este ejemplo, la heurística es la distancia directa entre los nodos (sin considerar pesos de las aristas)
+    return abs(ord(nodo_actual) - ord(objetivo))
+
+# Definir el nodo inicial y el nodo objetivo para las búsquedas
+inicio = 'A'
+objetivo = 'F'
+
+# Utilizar la búsqueda A* con la heurística definida
+resultado_a_estrella = busqueda_a_estrella(grafo, inicio, objetivo, heuristica_distancia)
+print("Resultado de la búsqueda A*:", resultado_a_estrella)
+
+# Definir el parámetro alpha para la búsqueda AO*
+alpha = 0.5  # Puedes ajustar este valor según sea necesario
+
+# Utilizar la búsqueda AO* con la heurística definida y el parámetro alpha
+resultado_ao_estrella = busqueda_ao_estrella(grafo, inicio, objetivo, heuristica_distancia, alpha)
+print("Resultado de la búsqueda AO*:", resultado_ao_estrella)
