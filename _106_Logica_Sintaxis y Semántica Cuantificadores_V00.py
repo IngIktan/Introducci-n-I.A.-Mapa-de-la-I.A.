@@ -1,4 +1,4 @@
-# Autor: Daniel Alejandro Flores Sepulveda
+ # Autor: Daniel Alejandro Flores Sepulveda
 # Ejemplo de representación y evaluación de proposiciones con cuantificadores en Python
 
 # Definir un conjunto de elementos
